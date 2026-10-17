@@ -1,0 +1,129 @@
+@import "tailwindcss";
+@source "./**/*.tsx";
+
+/*
+ * デザイントークン（現行LPの :root 変数をそのまま移植）
+ * ブレークポイントは現行CSSの max-width: 620px / 900px に合わせ、
+ * モバイルファーストで md = 621px〜, lg = 901px〜 とする。
+ */
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-md: 38.8125rem; /* 621px */
+  --breakpoint-lg: 56.3125rem; /* 901px */
+
+  --color-ink: #4a4a4a;
+  --color-paper: #fff;
+  --color-soft: #fafafa;
+  --color-accent: #ffd447;
+  --color-line: #e5e5e5;
+  --color-muted: #727272;
+  --color-lead: #555;
+  --color-sub: #777;
+  --color-faint: #888;
+  --color-caption: #686868;
+  --color-tag: #f7f7f7;
+  --color-rule: #e7e7e7;
+  --color-calendar: #eef3f9;
+
+  --font-sans: "Noto Sans JP", sans-serif;
+  --font-display: "DM Sans", sans-serif;
+
+  --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.09);
+  --shadow-step: 0 12px 34px rgba(0, 0, 0, 0.06);
+  --shadow-header: 0 4px 18px rgba(0, 0, 0, 0.06);
+  --shadow-btn: 0 12px 30px rgba(0, 0, 0, 0.18);
+  --shadow-floating: 0 12px 35px rgba(0, 0, 0, 0.25);
+  --shadow-badge: 5px 5px 0 var(--color-ink);
+
+  --container-site: 1180px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* ヘッダーの実高さ＋余白。スマホ / タブレット / PC で変わる */
+    scroll-padding-top: 96px;
+  }
+  @media (width >= 38.8125rem) {
+    html {
+      scroll-padding-top: 126px;
+    }
+  }
+  @media (width >= 56.3125rem) {
+    html {
+      scroll-padding-top: 92px;
+    }
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+    }
+  }
+}
+
+@utility wrap {
+  width: min(calc(100% - 28px), var(--container-site));
+  margin-inline: auto;
+  @media (width >= 38.8125rem) {
+    width: min(calc(100% - 40px), var(--container-site));
+  }
+}
+
+@utility hero-text-shadow {
+  text-shadow:
+    0 3px 7px rgba(0, 0, 0, 0.9),
+    0 0 22px rgba(0, 0, 0, 0.72);
+}
+
+@utility hero-copy-shadow {
+  text-shadow:
+    0 2px 4px #000,
+    0 0 12px rgba(0, 0, 0, 0.95),
+    0 0 28px rgba(0, 0, 0, 0.8);
+}
+
+@utility arrow-outline {
+  text-shadow:
+    0 1px 0 #fff,
+    1px 0 0 #fff,
+    -1px 0 0 #fff;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

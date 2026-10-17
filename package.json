@@ -1,0 +1,29 @@
+{
+  "name": "povit-lp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build:css && concurrently -k -n css,worker \"npm:watch:css\" \"wrangler dev\"",
+    "build:css": "tailwindcss -i ./src/styles.css -o ./public/assets/styles.css --minify",
+    "watch:css": "tailwindcss -i ./src/styles.css -o ./public/assets/styles.css --watch",
+    "deploy": "npm run build:css && wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "cf-typegen": "wrangler types",
+    "db:migrate:local": "wrangler d1 migrations apply povit-lp --local",
+    "db:migrate:remote": "wrangler d1 migrations apply povit-lp --remote",
+    "images:sync:local": "bash ./scripts/sync-images.sh --local",
+    "images:sync:remote": "bash ./scripts/sync-images.sh --remote",
+    "release": "bash ./scripts/release.sh"
+  },
+  "dependencies": {
+    "hono": "4.13.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "concurrently": "10.0.6",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "wrangler": "4.151.1"
+  }
+}

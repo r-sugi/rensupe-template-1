@@ -1,0 +1,21 @@
+# 依存（OSごとのバイナリを含むため各マシンで npm ci）
+node_modules/
+
+# Wrangler のローカル状態（ローカルD1/R2など）
+.wrangler/
+
+# 秘密情報
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+
+# 生成物（npm run build:css / npm run cf-typegen で再生成）
+public/assets/styles.css
+worker-configuration.d.ts
+
+# 写真の一時ダウンロード先（scripts/sync-images.sh）
+.images/
+
+# OS
+.DS_Store
