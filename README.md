@@ -173,15 +173,62 @@ UPDATE site_settings SET value = 'https://www.google.com/maps?q=[住所]&output=
 UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&query=[住所]' WHERE key = 'map_url';
 ```
 
-### 独自ドメイン（例：`example.com`）で公開する
+### 独自ドメインで公開する（任意）
+
+#### 独自ドメインとは？
+
+**ドメイン**は、インターネット上の「住所」にあたる文字列です。たとえば `https://studio-example.com` の `studio-example.com` の部分です。
+
+ボタンで公開した直後のページは、`https://rensupe-lp.〇〇.workers.dev` のように Cloudflare から割り当てられた住所になります。これでも誰でも見られますが、**自分のお店専用の住所（独自ドメイン）**にすると、次のような良さがあります。
+
+- お店の名前を入れた、覚えやすいURLにできる（例：`studio-example.com`）
+- チラシや名刺、Googleマップに載せたときに信頼感が出る
+- あとからホームページの作り方を変えても、同じURLを使い続けられる
+
+独自ドメインは「ドメイン登録サービス」から借りるもので、**毎年の利用料**がかかります（料金はドメインの種類 `.com` `.jp` などで変わります）。使わない場合は、このまま `workers.dev` のURLで運用して問題ありません。
+
+#### 進め方を選ぶ
+
+| あなたの状況 | 進める手順 |
+| --- | --- |
+| ドメインをまだ持っていない | A → C |
+| 他の会社（お名前.com、ムームードメインなど）でドメインを持っている | B → C |
+| すでに Cloudflare でドメインを管理している | C だけ |
+
+#### A. ドメインを新しく取る（Cloudflare で購入）
+
+[![ドメインを登録する](https://img.shields.io/badge/Cloudflare-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92%E7%99%BB%E9%8C%B2%E3%81%99%E3%82%8B-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/domains/register)
+
+1. 上のボタンを押し、欲しいドメイン名（例：`studio-example`）を入力して検索します。
+2. 空いているドメインと年間の料金が表示されるので、選んで購入します。
+3. 購入したドメインは、自動で Cloudflare の管理下に入ります。そのまま **C** に進んでください。
+
+#### B. 他の会社で持っているドメインを Cloudflare につなぐ
+
+[![ドメインを Cloudflare に追加する](https://img.shields.io/badge/Cloudflare-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%99%E3%82%8B-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/add-site)
+
+1. 上のボタンを押し、持っているドメイン（例：`studio-example.com`）を入力します。
+2. プランは **Free（無料）** を選びます。
+3. 今の設定（DNSレコード）が読み込まれるので、そのまま「続行」を押します。
+4. **2つのネームサーバー**（`〇〇.ns.cloudflare.com` のような文字列）が表示されます。これをメモします。
+5. ドメインを買った会社の管理画面を開き、「ネームサーバーの変更」で、今のネームサーバーを手順4の2つに書き換えます。
+6. 切り替わると Cloudflare からメールが届きます（数分〜最大24時間ほど）。届いたら **C** に進んでください。
+
+> ⚠️ **そのドメインでメールや別のホームページを使っている場合**：手順3で読み込まれた設定に、今使っているものがすべて入っているか確認してください。不安な場合は、ドメインを管理している人や業者に相談してから進めるのが安全です。
+
+#### C. ホームページにドメインを割り当てる
 
 [![Workers のドメイン設定](https://img.shields.io/badge/Workers-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E8%A8%AD%E5%AE%9A-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/workers-and-pages)
 
-ドメインが Cloudflare に登録済みであることが前提です。
-
-1. 上のボタンを押し、`rensupe-lp`（手順2で付けた名前）を開きます。
+1. 上のボタンを押し、`rensupe-lp`（手順2で名前を変えた場合はその名前）を開きます。
 2. 「設定」（Settings）→「ドメインとルート」（Domains & Routes）→「追加」（Add）→「カスタムドメイン」（Custom domain）を選びます。
-3. 公開したいドメインを入力して追加します。数分で、そのドメインでも表示されるようになります。
+3. 公開したいアドレスを入力して「ドメインを追加」を押します。
+   - ドメインそのもので公開する：`studio-example.com`
+   - ドメインの一部を使う（ほかのホームページと分けたいとき）：`lp.studio-example.com` など
+4. 数分待ち、入力したアドレスをブラウザで開いてページが表示されれば完了です。安全な接続（`https://`）の設定は自動で行われます。
+
+> 💡 独自ドメインを追加しても、`workers.dev` のURLも引き続き使えます。
+> 💡 「すでにレコードがあります」のような表示が出て追加できない場合は、そのアドレスを別のホームページなどで使っています。上の 3. で `lp.` などを付けた別のアドレスにするか、ドメインの管理者に確認してください。
 
 ---
 
@@ -193,87 +240,11 @@ UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&quer
 | 写真がグレーのまま | ファイル名が表と違う（大文字や `.jpeg` など）か、別のバケットに入れています。ファイル名とバケット名を確認してください |
 | 書き換えた内容が出ない | 反映まで最大1分かかります。少し待ってから再読み込みしてください |
 | カレンダーが出ない | カレンダーが一般公開になっていないか、`calendar_embed_url` に `src="` や `"` まで含めて貼っています |
+| 独自ドメインを開くと「このサイトにアクセスできません」 | ネームサーバーの切り替え（B）が終わっていないか、割り当て（C）から数分しか経っていません。時間をおいて再度開いてください |
 | GitHub のファイルを書き換えたら、ページが元に戻った | GitHub のファイルを変更すると自動で再公開されます。`migrations` フォルダのファイルは最初の1回しか使われないので、内容の変更は必ずデータベース（D1）で行ってください |
 
 ---
 
-<details>
-<summary><b>開発者向けの情報</b>（ボタンを使わずに手元から操作する場合）</summary>
+## 開発者・AI 向けの情報
 
-### 構成
-
-| 役割 | 使うもの |
-| --- | --- |
-| SSR | Cloudflare Workers + Hono 4.13.13（JSX） |
-| CSS | Tailwind CSS 4.3.3（`@tailwindcss/cli` でビルドし、静的アセットとして配信） |
-| 内容 | D1（バインディング `DB`） |
-| 写真 | R2（バインディング `IMAGES`、`/images/<key>` で配信） |
-| ツール | Wrangler 4.151.1 / TypeScript 7.0.2 |
-
-```
-src/
-  index.tsx             ルーティング（/ と /images/*）
-  content.ts            D1読み込み（1リクエスト1バッチ）
-  images.ts             R2配信（ETag/304対応、未登録なら image_sources から取得して保存、無ければプレースホルダー）
-  styles.css            Tailwind v4 のテーマ＝デザイントークン
-  components/
-    layout.tsx          head・ヘッダー・フッター・スマホ固定CTA
-    sections.tsx        ヒーロー〜アクセスの各セクション
-    ui.tsx              ロゴ・ボタン・見出しなどの部品
-migrations/
-  0001_init.sql         スキーマ
-  0002_seed.sql         初期データ（[ ] がプレースホルダー）
-  0003_image_sources.sql 写真の取得元テーブル（任意）
-scripts/
-  release.sh            CLIでの初回リリース（D1・R2作成 → マイグレーション → デプロイ）
-```
-
-### Deploy to Cloudflare ボタンの仕組み
-
-- Cloudflare が `wrangler.jsonc` を読み、D1・R2 を作成して、新しい ID で設定を書き換えます（`database_id` の `00000000-…` はそのためのダミー値）。
-- Workers Builds が `package.json` の `build`（CSS ビルド）と `deploy`（マイグレーション → `wrangler deploy`）を実行します。マイグレーションはバインディング名 `DB` を指定しているので、利用者がDB名を変えても動きます。
-- `package.json` の `cloudflare.bindings` に書いた説明文が、ボタンの設定画面に表示されます。
-- ボタンを使うにはリポジトリが public である必要があります。
-
-### CLI でのセットアップとデプロイ
-
-```bash
-npm ci
-npm run cf-typegen   # worker-configuration.d.ts（型）を生成
-npx wrangler login
-npm run release      # 初回：D1・R2を作成し database_id を書き込んでデプロイ
-npm run deploy       # 2回目以降：CSSビルド → マイグレーション → デプロイ
-```
-
-`node_modules` には OS ごとのバイナリ（workerd、Tailwind）が入るため、実行するマシンでインストールしてください。
-
-### ローカル開発
-
-```bash
-npm run db:migrate:local
-npm run dev                 # http://localhost:8787
-```
-
-### CLI での内容・写真の更新
-
-```bash
-npx wrangler d1 execute DB --remote --command "UPDATE prices SET amount = 1000 WHERE title = '平日・日中'"
-npx wrangler r2 object put rensupe-lp-images/hero.jpg --file ./hero.jpg --content-type image/jpeg --remote
-```
-
-スキーマ変更は `migrations/0004_xxx.sql` のように新しいファイルを追加すると、次のデプロイで適用されます。既存サイトの写真を流用する場合は、`image_sources` にキーと取得元 URL を登録すると、R2 に無い写真を初回アクセス時に取得して保存します。
-
-### デザイントークン（`src/styles.css` の `@theme`）
-
-- 色：`ink #4a4a4a` / `paper #fff` / `soft #fafafa` / `accent #ffd447` / `line #e5e5e5` / `muted #727272`
-- フォント：本文 `Noto Sans JP`、数字・ロゴ `DM Sans`
-- 幅：`--container-site: 1180px`（左右余白 SP 14px / それ以上 20px）
-- ブレークポイント：`md` = 621px〜、`lg` = 901px〜（モバイルファースト）
-
-### レイアウト
-
-- PC（901px〜）：ヘッダー1行、写真3列、料金3列、ステップ4列（間に →）
-- タブレット（621〜900px）：ヘッダー2段（ロゴ／横スクロールのリンク）、写真2列、ステップ2列
-- スマホ（〜620px）：すべて1列（ステップの間に ↓）、画面下に固定の予約ボタン
-
-</details>
+コードの構成、コマンドでのデプロイ方法、開発時の注意点は [CLAUDE.md](./CLAUDE.md) にまとめています。Claude Code などの AI にこのリポジトリの作業を頼むと、自動でこのファイルを読んで進めます。
