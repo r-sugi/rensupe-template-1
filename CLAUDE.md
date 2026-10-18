@@ -2,6 +2,19 @@
 
 レンタルスペース向け1ページLPのテンプレート。Cloudflare Workers（SSR）＋ D1 ＋ R2 で配信し、主な利用者は「Deploy to Cloudflare」ボタンで自分のアカウントに公開する非エンジニア。README.md はその利用者向けの画面操作マニュアルなので、技術的な説明はこのファイルに書く。
 
+## 利用者（非エンジニア）から内容の変更を頼まれたとき
+
+利用者は「店名を〇〇にして公開して」「料金を1,000円にして」「この写真をトップにして」のように日本語で頼んでくる。SQL やコマンドは見せずに、次の手順で最後（公開）まで進める。
+
+1. 内容の正本は `content/site.yaml`（文章・料金・FAQ など）と `content/photos/`（写真）。**D1 を直接書き換えない**（デプロイのたびに site.yaml の内容で上書きされる）。
+2. `content/site.yaml` を編集する。項目名は `src/content.ts` の `SETTING_KEYS` と一致させ、既存のコメントと構造は保つ。料金 `amount` は整数。地図の URL は `address` から自動生成されるので、住所の変更だけでよい。
+3. 写真は `content/photos/` にコピーし、ファイル名は半角小文字にする（トップ `hero.jpg`、設備 `facility-01.jpg`〜）。枚数やファイル名を変えたら `site.yaml` の `photos` / `hero_image_key` も合わせる。目安として長辺 2000px・5MB 以下に縮小する。
+4. `npm run content:sync:local` で記入ミスがないか確かめる（`✖` で始まる日本語エラーが出たら直す）。見た目の確認が必要なら `npm run dev`。
+5. 変更内容を利用者に日本語で短く説明し、了承を得てから `main` にコミットして push する。push すると Workers Builds が自動でデプロイし、2〜3分で反映される。
+6. 利用者が Cloudflare のデプロイ記録のエラーを貼ってきたら、`✖` のメッセージに従って `site.yaml` を直して再度 push する。
+
+初回は、利用者の GitHub にあるこのリポジトリのコピーを clone するところから始まる（`git clone https://github.com/<ユーザー名>/<リポジトリ名>`）。GitHub の認証でブラウザが開いたら、利用者に「許可」を押してもらう。
+
 ## 技術構成
 
 | 役割 | 使うもの |
@@ -26,11 +39,16 @@ src/
     layout.tsx          <head>、ヘッダー、フッター、スマホ固定CTA
     sections.tsx        ヒーロー〜アクセスの各セクション
     ui.tsx              Brand / Button / SectionName / Lead / Section
+content/
+  site.yaml             ホームページの内容の正本（[ ] がプレースホルダー）
+  photos/               写真の正本（ファイル名 = R2 のキー）
 migrations/
   0001_init.sql         スキーマ
-  0002_seed.sql         初期データ。[ ] で囲んだ値がプレースホルダー
-  0003_image_sources.sql 写真の取得元テーブル（初期データなし）
+  0002_seed.sql         何もしない（内容は content/site.yaml から同期）
+  0003_image_sources.sql 写真の取得元テーブル（任意・初期データなし）
+  0004_content_assets.sql 同期済み写真のハッシュ（変わった写真だけ R2 に上げるため）
 scripts/
+  sync-content.mjs      content/ を D1・R2 に同期（--local / --remote）。記入ミスは日本語エラーで止める
   release.sh            ボタンを使わない初回リリース（D1・R2作成 → database_id 書き込み → npm run deploy）
 public/_headers         /assets/* のキャッシュ設定
 ```
@@ -44,12 +62,12 @@ npm ci
 npm run cf-typegen          # worker-configuration.d.ts を生成（wrangler.jsonc を変えたら再実行）
 npm run typecheck           # wrangler types + tsc --noEmit
 
-npm run db:migrate:local
-npm run dev                 # http://localhost:8787（Tailwind の watch と wrangler dev を同時起動）
+npm run content:sync:local  # content/ をローカルの D1・R2 に同期（記入ミスのチェックも兼ねる）
+npm run dev                 # マイグレーション・同期のあと http://localhost:8787 で起動（Tailwind の watch 付き）
 
 npx wrangler login
 npm run release             # 初回：D1・R2を作成し、database_id を書き込んでデプロイ
-npm run deploy              # 2回目以降：CSSビルド → マイグレーション（--remote）→ wrangler deploy
+npm run deploy              # 2回目以降：CSSビルド → マイグレーション → content 同期（--remote）→ wrangler deploy
 ```
 
 `node_modules` には OS ごとのネイティブバイナリ（workerd、Tailwind の oxide）が入る。別 OS で入れたものを持ち込むと `You installed workerd on another platform` で落ちるので、実行するマシンで `npm ci` し直す。
@@ -57,19 +75,20 @@ npm run deploy              # 2回目以降：CSSビルド → マイグレー�
 ## Deploy to Cloudflare ボタンの前提（壊さないこと）
 
 - Cloudflare は `wrangler.jsonc` を読んで D1・R2 を作成し、新しい ID で利用者側リポジトリの設定を書き換える。そのため `database_id` はダミー値（`00000000-0000-0000-0000-000000000000`）のままにする。実在の ID・`account_id`・`routes` はコミットしない。
-- Workers Builds は `package.json` の `build` と `deploy` を実行する。`deploy` でマイグレーションを流しており、対象は DB 名ではなくバインディング名 `DB` を指定している（利用者が DB 名を変えても動くように）。
+- Workers Builds は `package.json` の `build` と `deploy` を実行する。`deploy` でマイグレーションと content 同期を流しており、対象は DB 名ではなくバインディング名 `DB` を指定している（利用者が DB 名を変えても動くように）。main への push のたびに同じ流れで再デプロイされる。
+- content 同期で検証エラーになるとデプロイ全体が止まり、公開中のページは前のまま残る（README でもそう案内している）。
 - `package.json` の `cloudflare.bindings` の説明文がボタンの設定画面に表示される。
 - `workers_dev: true` で公開し、独自ドメインは利用者がダッシュボードで追加する（README の手順 A〜C）。
 - ボタンはリポジトリが public でないと使えない。
 - 店舗固有の値（店名・住所・URL・カレンダーID・写真の取得元など）はリポジトリに入れない。必要な値はすべて `0002_seed.sql` のプレースホルダーにする。
 
-## 内容の変更方法
+## 仕組みと変更時の注意
 
-- 公開後の内容変更は D1 で行う（`npx wrangler d1 execute DB --remote --command "…"`、または README の画面手順）。`0002_seed.sql` は初回のマイグレーションでしか使われないので、編集しても公開済みのサイトには反映されない。
-- スキーマ変更は `migrations/0004_xxx.sql` のように新しいファイルを追加する。既存のマイグレーションは書き換えない（適用済みの環境とずれる）。
-- `site_settings` にキーを足すときは、`src/content.ts` の `SETTING_KEYS` にも追加する（無いキーは空文字になる）。
-- 写真の R2 キーは、利用者がダッシュボードからそのままアップロードできるよう、フォルダ無しのファイル名（`hero.jpg`、`facility-01.jpg`〜`facility-09.jpg`）にしている。
-- README の利用者向け手順と食い違う変更をしたら、README も合わせて直す。
+- 内容の流れ：`content/site.yaml` / `content/photos/` → `scripts/sync-content.mjs`（デプロイ時）→ D1 の各テーブル・R2 → Worker が SSR。site.yaml の一覧は順番がそのまま `sort` になる。
+- 同期は内容テーブルを毎回 DELETE → INSERT で入れ替える。写真は `content_assets` のハッシュと比べて変わったものだけ R2 に put する（R2 から古い写真は消さない）。
+- `site_settings` にキーを足すときは、`src/content.ts` の `SETTING_KEYS` に追加し、`content/site.yaml` にも項目を足す（同期スクリプトは SETTING_KEYS に無いキーをエラーにする）。
+- スキーマ変更は `migrations/0005_xxx.sql` のように新しいファイルを追加し、同期スクリプトの SQL 生成も合わせる。既存のマイグレーションは書き換えない。
+- README の利用者向け手順と食い違う変更をしたら、README も合わせて直す。README に SQL やコマンドは書かない（利用者は読まない・実行しない）。
 
 ## デザイン
 

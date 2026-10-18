@@ -113,125 +113,87 @@ Cloudflare では「パスキー」という名前ではなく、**「セキュ�
 
 ### 手順3：公開されたページを開く
 
-完了画面に表示される `https://〜.workers.dev` のURLを開きます。仮の文字と仮写真のページが表示されれば成功です。
+完了画面に表示される `https://〇〇.workers.dev` のURLを開きます。仮の文字と仮写真のページが表示されれば成功です。
 
-> 💡 このURLは、あとから Cloudflare の「Workers & Pages」画面でいつでも確認できます。
+> 💡 〇〇の部分は「プロジェクト名.アカウントごとの文字列」です（例：`https://rensupe-lp.yamada-studio.workers.dev`）。このURLは、あとから Cloudflare の「Workers & Pages」画面でいつでも確認できます。
+
+手順2で、あなたの GitHub にこのテンプレートのコピー（リポジトリ）が作られています。お店の内容は、このコピーの中のファイルを書き換えて変えます。
 
 ---
 
 ## 自分のお店の内容に変える
 
-内容の書き換えも、すべて Cloudflare の画面で行います。**ホームページを作り直す必要はありません。** 保存すると、1分ほどでページに反映されます。
+ホームページの内容は、あなたの GitHub のリポジトリにある次の2か所で決まります。
 
-### 文章・料金・よくある質問を変える
-
-[![D1 で内容を編集する](https://img.shields.io/badge/D1-%E5%86%85%E5%AE%B9%E3%82%92%E7%B7%A8%E9%9B%86%E3%81%99%E3%82%8B-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/workers/d1)
-
-1. 上のボタンを押し、データベース **`rensupe-lp`** を開きます（手順2で名前を変えた場合はその名前）。
-2. 「コンソール」（Console）タブを開きます。
-3. 下の「お店の基本情報」のSQLをコピーし、`[ ]` の部分を自分のお店の内容に書き換えます。
-4. コンソールに貼り付けて「実行」（Execute）を押します。
-5. ホームページを再読み込みして、内容が変わったことを確認します。
-
-**お店の基本情報（最初に必ず書き換える部分）**
-
-```sql
-UPDATE site_settings SET value = 'レンタルスタジオ [店名]' WHERE key = 'brand_name';
-UPDATE site_settings SET value = '[店名の頭文字1文字]' WHERE key = 'brand_mark';
-UPDATE site_settings SET value = '[最寄り駅]のレンタルスタジオ [店名]｜24時間・1時間500円〜' WHERE key = 'meta_title';
-UPDATE site_settings SET value = '[最寄り駅]徒歩[N]分・' WHERE key = 'hero_title_a';
-UPDATE site_settings SET value = '[店名]が選ばれる理由' WHERE key = 'features_title';
-UPDATE site_settings SET value = '[最寄り駅]から徒歩[N]分' WHERE key = 'access_lead';
-UPDATE site_settings SET value = '[住所]' WHERE key = 'address';
-UPDATE site_settings SET value = '[路線名][最寄り駅]から徒歩[N]分' WHERE key = 'station';
-UPDATE site_settings SET value = 'https://[予約ページのURL]' WHERE key = 'reservation_url';
-UPDATE site_settings SET value = 'https://[特定商取引法に基づく表記のURL]' WHERE key = 'law_url';
-UPDATE features SET title = '[最寄り駅]徒歩[N]分' WHERE sort = 1;
-```
-
-**料金を変える**（例：平日・日中を1,000円に）
-
-```sql
-UPDATE prices SET amount = 1000 WHERE title = '平日・日中';
-```
-
-**よくある質問を追加する**
-
-```sql
-INSERT INTO faqs (sort, question, answer) VALUES (7, '更衣室はありますか？', 'ございません。動きやすい服装でお越しください。');
-```
-
-**よくある質問を削除する**（例：上から6番目）
-
-```sql
-DELETE FROM faqs WHERE sort = 6;
-```
-
-> 💡 データベースの画面に「テーブル」（Tables）タブがある場合は、`site_settings` などの表を開き、値を直接書き換えることもできます。
-
-<details>
-<summary>書き換えられる項目の一覧（site_settings）</summary>
-
-| key | 表示される場所 |
+| 場所 | 中身 |
 | --- | --- |
-| `meta_title` | ブラウザのタブ・検索結果のタイトル |
-| `meta_description` | 検索結果の説明文 |
-| `brand_name` | ヘッダー・フッターの店名 |
-| `brand_mark` | ロゴの四角の中の1文字 |
-| `hero_title_a` / `hero_title_b` | トップの大見出し（2つ合わせて1行。スマホでは2つの間で改行） |
-| `hero_copy` | トップの説明文 |
-| `hero_image_key` | トップの写真のファイル名 |
-| `features_title` | 「選ばれる理由」の見出し |
-| `facility_lead` | 「スタジオと設備」の説明文 |
-| `price_lead` | 「ご利用料金」の説明文 |
-| `availability_lead` / `availability_note` | 「空き状況」の説明文・注意書き |
-| `calendar_embed_url` | 空き状況に表示する Google カレンダー |
-| `access_lead` / `address` / `hours` / `station` | 「アクセス」の内容 |
-| `map_url` / `map_embed_url` | 地図ボタンのリンク先・表示する地図 |
-| `reservation_url` | 「予約する」ボタンのリンク先 |
-| `law_url` | フッターの「特定商取引法に基づく表記」のリンク先 |
-| `floating_cta_label` | スマホ画面下の予約ボタンの文字 |
+| `content/site.yaml` | 店名・住所・説明文・料金・よくある質問など、文章のすべて |
+| `content/photos` フォルダ | 写真 |
 
-そのほかの表：`features`（選ばれる理由）、`facility_specs`（設備のタグ）、`facility_photos`（設備写真）、`prices`（料金）、`steps`（ご利用方法）、`faqs`（よくある質問）。どれも `sort` の小さい順に表示されます。
+ここを書き換えて保存すると、**2〜3分で自動的にホームページに反映**されます。データベースや Cloudflare の設定画面を触る必要はありません。
 
-</details>
+書き換える方法は2通りです。やりやすいほうを選んでください。
 
-### 写真を入れる
+### 方法1：AI に頼む（おすすめ）
 
-[![R2 に写真を入れる](https://img.shields.io/badge/R2-%E5%86%99%E7%9C%9F%E3%82%92%E5%85%A5%E3%82%8C%E3%82%8B-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/r2/overview)
+パソコンの **Claude Code**（Claude のデスクトップアプリ）に、日本語で頼むだけで書き換えと公開までしてくれます。
 
-1. 写真のファイル名を、下の表のとおりに変えておきます（**すべて半角小文字**、拡張子は `.jpg`）。
-2. 上のボタンを押し、バケット **`rensupe-lp-images`** を開きます。
-3. 「アップロード」（Upload）を押し、写真をまとめてドラッグ＆ドロップします。
-4. ホームページを再読み込みすると、グレーの仮写真が本物に置き換わります。
+1. Claude のデスクトップアプリを開き、「Code」を選びます。
+2. **最初の1回だけ**、次のように頼みます（`あなたのユーザー名` と `リポジトリ名` は手順2で作られたものに置き換えます）。
+   > https://github.com/あなたのユーザー名/リポジトリ名 をこのパソコンにコピーして
+   - 途中でブラウザが開き、GitHub へのアクセスの許可を求められたら「許可」を押します。
+3. あとは、変えたいことをそのまま頼みます。たとえば：
+   > 店名を「スタジオ山田」、最寄り駅を「渋谷駅」、徒歩5分にして公開して
+
+   > 平日・日中の料金を1,000円にして公開して
+
+   > よくある質問に「更衣室はありますか？ → ありません。動きやすい服装でお越しください」を追加して公開して
+
+   > デスクトップの「スタジオ写真」フォルダの写真を、トップと設備の写真にして公開して
+4. AI が変更内容を見せて、作業の許可を求めてきます。内容を確認して「許可」を押してください。
+5. 「公開しました」と返ってきたら、2〜3分待ってからホームページを再読み込みします。
+
+> 💡 AI はリポジトリの中の `CLAUDE.md` を読んで、どのファイルをどう書き換えればよいかを判断します。
+
+### 方法2：GitHub の画面で直接書き換える
+
+**文章・料金・よくある質問を変える**
+
+1. GitHub で自分のリポジトリを開き、`content` フォルダ → `site.yaml` を開きます。
+2. 右上の鉛筆マーク（Edit this file）を押します。
+3. `[店名]` や `[最寄り駅]` など、`[ ]` で囲まれた部分を自分のお店の内容に書き換えます。
+   - `項目名: "値"` の **項目名（: の左側）と、行の先頭のスペースはそのまま** にしてください。
+   - 料金（`amount`）は数字だけで書きます（例：`1000`）。
+   - よくある質問を増やすときは、`- question:` と `answer:` の2行をコピーして下に足します。
+4. 右上の **「Commit changes...」** を押し、出てきた画面でもう一度 **「Commit changes」** を押して保存します。
+
+**写真を入れる・差し替える**
+
+1. GitHub で自分のリポジトリを開き、`content` フォルダ → `photos` フォルダを開きます。
+2. 右上の **「Add file」→「Upload files」** を押します。
+3. 写真をドラッグ＆ドロップし、下の **「Commit changes」** を押して保存します。
+
+写真のファイル名は、次のとおりにしてください（**すべて半角小文字**）。同じ名前でアップロードすると差し替えになります。
 
 | ファイル名 | 表示される場所 |
 | --- | --- |
 | `hero.jpg` | トップの大きな写真（横長がおすすめ） |
 | `facility-01.jpg` 〜 `facility-09.jpg` | 「スタジオと設備」の写真（9枚。縦横比 3:2 がおすすめ） |
 
-> 💡 写真の説明文（キャプション）を変えたい場合は、データベースの `facility_photos` 表の `caption` を書き換えます。
-> 例：`UPDATE facility_photos SET caption = '大型ミラー' WHERE sort = 1;`
+### 書き換えた内容が反映されたか確かめる
+
+保存してから2〜3分たったら、ホームページを再読み込みします。
+
+書き方に誤りがあると、公開は中止され、**それまでのページがそのまま表示され続けます**（ページが壊れることはありません）。反映されないときは、Cloudflare の「Workers & Pages」でプロジェクトを開き、「デプロイ」（Deployments）の一番新しい記録を見てください。`✖` から始まる日本語のメッセージに、どの行の何を直せばよいかが書かれています。AI に頼んでいる場合は、そのメッセージを貼り付けて「直して」と頼めば直してくれます。
 
 ### 空き状況のカレンダーを表示する
 
 1. [Google カレンダー](https://calendar.google.com/) を開き、左の一覧で予約用カレンダーの「︙」→「設定と共有」を開きます。
 2. 「アクセス権限」で「一般公開して誰でも利用できるようにする」をオンにします（「予定の表示（時間枠のみ、詳細は非表示）」を選ぶと、予定の中身は見えません）。
 3. 「カレンダーの統合」の「埋め込みコード」にある `src="〜"` の **〜の部分** をコピーします。
-4. D1 のコンソールで次を実行します。
+4. `content/site.yaml` の `calendar_embed_url:` の値を、コピーしたURLに書き換えます（AI には「空き状況のカレンダーを、このURLにして公開して」とURLを貼って頼めます）。
 
-```sql
-UPDATE site_settings SET value = '[コピーしたURL]' WHERE key = 'calendar_embed_url';
-```
-
-### 地図を表示する
-
-住所を入れた次のSQLを実行します。`[住所]` の部分は、そのまま日本語で入れて大丈夫です。
-
-```sql
-UPDATE site_settings SET value = 'https://www.google.com/maps?q=[住所]&output=embed' WHERE key = 'map_embed_url';
-UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&query=[住所]' WHERE key = 'map_url';
-```
+> 💡 **地図** は、`content/site.yaml` の `address`（住所）から自動で作られます。住所を書き換えるだけで地図も変わります。
 
 ### 独自ドメインで公開する（任意）
 
@@ -239,7 +201,7 @@ UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&quer
 
 **ドメイン**は、インターネット上の「住所」にあたる文字列です。たとえば `https://studio-example.com` の `studio-example.com` の部分です。
 
-ボタンで公開した直後のページは、`https://rensupe-lp.〇〇.workers.dev` のように Cloudflare から割り当てられた住所になります。これでも誰でも見られますが、**自分のお店専用の住所（独自ドメイン）**にすると、次のような良さがあります。
+ボタンで公開した直後のページは、`https://〇〇.workers.dev` のように Cloudflare から割り当てられた住所になります。これでも誰でも見られますが、**自分のお店専用の住所（独自ドメイン）**にすると、次のような良さがあります。
 
 - お店の名前を入れた、覚えやすいURLにできる（例：`studio-example.com`）
 - チラシや名刺、Googleマップに載せたときに信頼感が出る
@@ -251,9 +213,8 @@ UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&quer
 
 | あなたの状況 | 進める手順 |
 | --- | --- |
-| ドメインをまだ持っていない | A → C |
-| 他の会社（お名前.com、ムームードメインなど）でドメインを持っている | B → C |
-| すでに Cloudflare でドメインを管理している | C だけ |
+| ドメインをまだ持っていない | A → B |
+| すでに Cloudflare でドメインを管理している | B だけ |
 
 #### A. ドメインを新しく取る（Cloudflare で購入）
 
@@ -261,22 +222,9 @@ UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&quer
 
 1. 上のボタンを押し、欲しいドメイン名（例：`studio-example`）を入力して検索します。
 2. 空いているドメインと年間の料金が表示されるので、選んで購入します。
-3. 購入したドメインは、自動で Cloudflare の管理下に入ります。そのまま **C** に進んでください。
+3. 購入したドメインは、自動で Cloudflare の管理下に入ります。そのまま **B** に進んでください。
 
-#### B. 他の会社で持っているドメインを Cloudflare につなぐ
-
-[![ドメインを Cloudflare に追加する](https://img.shields.io/badge/Cloudflare-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%99%E3%82%8B-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/add-site)
-
-1. 上のボタンを押し、持っているドメイン（例：`studio-example.com`）を入力します。
-2. プランは **Free（無料）** を選びます。
-3. 今の設定（DNSレコード）が読み込まれるので、そのまま「続行」を押します。
-4. **2つのネームサーバー**（`〇〇.ns.cloudflare.com` のような文字列）が表示されます。これをメモします。
-5. ドメインを買った会社の管理画面を開き、「ネームサーバーの変更」で、今のネームサーバーを手順4の2つに書き換えます。
-6. 切り替わると Cloudflare からメールが届きます（数分〜最大24時間ほど）。届いたら **C** に進んでください。
-
-> ⚠️ **そのドメインでメールや別のホームページを使っている場合**：手順3で読み込まれた設定に、今使っているものがすべて入っているか確認してください。不安な場合は、ドメインを管理している人や業者に相談してから進めるのが安全です。
-
-#### C. ホームページにドメインを割り当てる
+#### B. ホームページにドメインを割り当てる
 
 [![Workers のドメイン設定](https://img.shields.io/badge/Workers-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%E8%A8%AD%E5%AE%9A-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/workers-and-pages)
 
@@ -288,7 +236,7 @@ UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&quer
 4. 数分待ち、入力したアドレスをブラウザで開いてページが表示されれば完了です。安全な接続（`https://`）の設定は自動で行われます。
 
 > 💡 独自ドメインを追加しても、`workers.dev` のURLも引き続き使えます。
-> 💡 「すでにレコードがあります」のような表示が出て追加できない場合は、そのアドレスを別のホームページなどで使っています。上の 3. で `lp.` などを付けた別のアドレスにするか、ドメインの管理者に確認してください。
+> 💡 「すでにレコードがあります」のような表示が出て追加できない場合は、そのアドレスを別のホームページなどで使っています。3. で `lp.` などを付けた別のアドレスにしてください。
 
 ---
 
@@ -297,11 +245,11 @@ UPDATE site_settings SET value = 'https://www.google.com/maps/search/?api=1&quer
 | 症状 | 原因と対処 |
 | --- | --- |
 | 手順2が途中で失敗する（R2 に関するエラー） | R2 が有効になっていません。手順1を行ってから、Cloudflare の「Workers & Pages」でこのプロジェクトを開き、デプロイを再実行してください |
-| 写真がグレーのまま | ファイル名が表と違う（大文字や `.jpeg` など）か、別のバケットに入れています。ファイル名とバケット名を確認してください |
-| 書き換えた内容が出ない | 反映まで最大1分かかります。少し待ってから再読み込みしてください |
+| 書き換えた内容が出ない | 反映まで2〜3分かかります。それでも出ないときは「書き換えた内容が反映されたか確かめる」を見て、デプロイの記録のメッセージを確認してください |
+| 写真がグレーのまま | ファイル名が表と違う（大文字や `.JPG` など）か、`content/photos` 以外の場所に入れています。ファイル名と場所を確認してください |
 | カレンダーが出ない | カレンダーが一般公開になっていないか、`calendar_embed_url` に `src="` や `"` まで含めて貼っています |
-| 独自ドメインを開くと「このサイトにアクセスできません」 | ネームサーバーの切り替え（B）が終わっていないか、割り当て（C）から数分しか経っていません。時間をおいて再度開いてください |
-| GitHub のファイルを書き換えたら、ページが元に戻った | GitHub のファイルを変更すると自動で再公開されます。`migrations` フォルダのファイルは最初の1回しか使われないので、内容の変更は必ずデータベース（D1）で行ってください |
+| Cloudflare の画面でデータベースを直接書き換えたのに、元に戻った | 内容は `content/site.yaml` が正本で、保存（公開）のたびに上書きされます。必ず `content/site.yaml` を書き換えてください |
+| 独自ドメインを開くと「このサイトにアクセスできません」 | ドメインの割り当て（B）から数分しか経っていません。時間をおいて再度開いてください |
 
 ---
 
