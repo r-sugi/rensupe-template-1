@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-レンタルスペース向け1ページLPのテンプレート。Cloudflare Workers（SSR）＋ D1 ＋ R2 で配信し、主な利用者は「Deploy to Cloudflare」ボタンで自分のアカウントに公開する非エンジニア。README.md はその利用者向けの画面操作マニュアルなので、技術的な説明はこのファイルに書く。
+レンタルスペース向け1ページLPのテンプレート。Cloudflare Workers（SSR）＋ D1 ＋ R2 で配信し、主な利用者は「Deploy to Cloudflare」ボタンで自分のアカウントに公開する非エンジニア。README.md はその利用者向けの画面操作マニュアルなので、技術的な説明はこのファイルに書く。利用者は無料の Antigravity（Google）か Claude Code で作業を頼む想定で、Antigravity 向けの手順は `.agents/skills/update-site-content/SKILL.md` にある。内容変更の手順を変えたら、このファイルとあわせて更新する。
 
 ## 利用者（非エンジニア）から内容の変更を頼まれたとき
 
