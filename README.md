@@ -143,9 +143,15 @@ Antigravity が GitHub とやりとりするために、**Git** という道具�
 
 ### 手順3：公開されたページを開く
 
-完了画面に表示される `https://〇〇.workers.dev` のURLを開きます。仮の文字と仮写真のページが表示されれば成功です。
+[![Cloudflare でプロジェクトを開く](https://img.shields.io/badge/Cloudflare-%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%92%E9%96%8B%E3%81%8F-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/workers/services/view/rensupe-lp/production)
 
-> 💡 〇〇の部分は「プロジェクト名.アカウントごとの文字列」です（例：`https://rensupe-lp.yamada-studio.workers.dev`）。このURLは、あとから Cloudflare の「Workers & Pages」画面でいつでも確認できます。
+1. 上のボタンを押します（Cloudflare にログインしていない場合は、先にログイン画面が出ます）。
+   - アカウントを選ぶ画面が出たら、自分のアカウントを押します。
+2. プロジェクトの画面が開いたら、右上の **「訪問する」** を押します。
+3. 公開されたページ（`https://〇〇.workers.dev`）が開きます。仮の文字と仮写真のページが表示されれば成功です。
+
+> 💡 手順2でプロジェクト名を `rensupe-lp` から変えた場合、このボタンでは開けません。Cloudflare の「Workers & Pages」から、自分で付けた名前のプロジェクトを開いて「訪問する」を押してください。
+> 💡 〇〇の部分は「プロジェクト名.アカウントごとの文字列」です（例：`https://rensupe-lp.yamada-studio.workers.dev`）。
 
 手順2で、あなたの GitHub にこのテンプレートのコピー（リポジトリ）が作られています。お店の内容は、このコピーの中のファイルを書き換えて変えます。
 
