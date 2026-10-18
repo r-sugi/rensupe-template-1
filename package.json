@@ -7,13 +7,15 @@
     "build": "npm run build:css",
     "build:css": "tailwindcss -i ./src/styles.css -o ./public/assets/styles.css --minify",
     "watch:css": "tailwindcss -i ./src/styles.css -o ./public/assets/styles.css --watch",
-    "dev": "npm run build:css && concurrently -k -n css,worker \"npm:watch:css\" \"wrangler dev\"",
-    "deploy": "npm run build:css && npm run db:migrate:remote && wrangler deploy",
+    "dev": "npm run build:css && npm run db:migrate:local && npm run content:sync:local && concurrently -k -n css,worker \"npm:watch:css\" \"wrangler dev\"",
+    "deploy": "npm run build:css && npm run db:migrate:remote && npm run content:sync:remote && wrangler deploy",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "release": "bash ./scripts/release.sh",
     "typecheck": "wrangler types && tsc --noEmit",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "content:sync:local": "node scripts/sync-content.mjs --local",
+    "content:sync:remote": "node scripts/sync-content.mjs --remote"
   },
   "dependencies": {
     "hono": "4.13.13"
@@ -23,7 +25,8 @@
     "concurrently": "10.0.6",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "wrangler": "4.151.1"
+    "wrangler": "4.151.1",
+    "yaml": "2.9.1"
   },
   "cloudflare": {
     "bindings": {
