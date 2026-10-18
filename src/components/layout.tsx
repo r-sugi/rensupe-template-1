@@ -50,7 +50,7 @@ export const Header = ({ s }: { s: Settings }) => (
   <header class="fixed top-0 left-0 z-50 w-full border-b border-line bg-white/96 text-ink shadow-header backdrop-blur-md">
     <div class="wrap flex flex-col gap-1.5 py-2 md:grid md:h-[112px] md:grid-rows-2 md:gap-0 lg:flex lg:h-[76px] lg:flex-row lg:items-center lg:justify-between lg:gap-6 lg:py-0">
       <div class="flex items-center">
-        <Brand name={s.brand_name} />
+        <Brand name={s.brand_name} mark={s.brand_mark} />
       </div>
       <nav
         aria-label="メインメニュー"
@@ -80,7 +80,7 @@ export const Footer = ({ s }: { s: Settings }) => (
   <footer class="bg-ink pt-11 pb-[100px] text-white">
     <div class="wrap md:flex md:items-end md:justify-between md:gap-[30px]">
       <div>
-        <Brand name={s.brand_name} dark />
+        <Brand name={s.brand_name} mark={s.brand_mark} dark />
         <p class="mt-3 mb-0 text-[.8rem] text-white/55">© {s.brand_name}</p>
       </div>
       <div class="mt-[25px] flex flex-wrap gap-[18px] text-[.78rem] md:mt-0">

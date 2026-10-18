@@ -4,6 +4,7 @@ export const SETTING_KEYS = [
   "meta_title",
   "meta_description",
   "brand_name",
+  "brand_mark",
   "hero_title_a",
   "hero_title_b",
   "hero_copy",

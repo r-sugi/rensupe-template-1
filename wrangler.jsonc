@@ -1,20 +1,15 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
-	"name": "povit-lp",
+	// Worker名（「Deploy to Cloudflare」の設定画面で変更できる）
+	"name": "rensupe-lp",
 	"main": "src/index.tsx",
 	"compatibility_date": "2026-10-01",
-	"account_id": "9a93e379d73896df4f9234ac783ad6cb",
 	"observability": {
 		"enabled": true
 	},
-	// 公開URL（karibako.com のゾーンに Custom Domain として割り当て）
-	"routes": [
-		{
-			"pattern": "karibako.com",
-			"custom_domain": true
-		}
-	],
-	"workers_dev": false,
+	// 公開URLは https://<Worker名>.<アカウントのサブドメイン>.workers.dev
+	// 独自ドメインはデプロイ後に Cloudflare ダッシュボードの Worker 設定から追加する
+	"workers_dev": true,
 	// TailwindでビルドしたCSSなどの静的ファイル
 	"assets": {
 		"directory": "./public",
@@ -24,21 +19,17 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "povit-lp",
-			// `wrangler d1 create povit-lp` で表示されたIDに置き換える
-			"database_id": "fa5c95c0-ecc6-47e1-981c-b675b227ae68",
+			"database_name": "rensupe-lp",
+			// デプロイ時に、新しく作成されたデータベースのIDへ自動で書き換わる
+			"database_id": "00000000-0000-0000-0000-000000000000",
 			"migrations_dir": "migrations"
 		}
 	],
-	// 写真（初回アクセス時に image_sources の取得元から自動で保存される）
+	// 写真
 	"r2_buckets": [
 		{
 			"binding": "IMAGES",
-			"bucket_name": "povit-lp-images"
-		},
-		{
-			"bucket_name": "povit-lp-images",
-			"binding": "lp_public_images"
+			"bucket_name": "rensupe-lp-images"
 		}
 	]
 }

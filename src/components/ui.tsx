@@ -7,10 +7,10 @@ export const lines = (text: string): Child[] =>
   text.split("\n").flatMap((line, i) => (i === 0 ? [line] : [<br />, line]));
 
 /** ロゴ（ヘッダー／フッター共通） */
-export const Brand = ({ name, dark = false }: { name: string; dark?: boolean }) => (
+export const Brand = ({ name, mark, dark = false }: { name: string; mark: string; dark?: boolean }) => (
   <a
     href="#top"
-    aria-label="Povit トップへ"
+    aria-label={`${name} トップへ`}
     class="flex items-center gap-3 whitespace-nowrap font-display text-[1.15rem] font-bold tracking-[.06em] md:text-[1.5rem]"
   >
     <span
@@ -20,7 +20,7 @@ export const Brand = ({ name, dark = false }: { name: string; dark?: boolean }) 
         dark ? "border-white/80" : "border-ink",
       )}
     >
-      P
+      {mark}
     </span>
     {name}
   </a>

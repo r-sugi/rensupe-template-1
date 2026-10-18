@@ -125,7 +125,7 @@ export const Availability = ({ s }: { s: Settings }) => (
     <div class="mt-7 border border-[#d9d9d9] bg-calendar p-2 shadow-card md:p-[14px]">
       <div class="overflow-x-auto bg-white [-webkit-overflow-scrolling:touch]">
         <iframe
-          title="レンタルスタジオPovitの空き状況"
+          title={`${s.brand_name}の空き状況`}
           loading="lazy"
           src={s.calendar_embed_url}
           class="block h-[620px] w-full min-w-[760px] border-0 md:h-[680px]"
@@ -221,7 +221,7 @@ export const Access = ({ s }: { s: Settings }) => (
       </div>
       <div class="min-h-[360px] overflow-hidden rounded-3xl bg-[#ddd] shadow-card lg:min-h-[460px]">
         <iframe
-          title="レンタルスタジオPovit 周辺地図"
+          title={`${s.brand_name} 周辺地図`}
           loading="lazy"
           src={s.map_embed_url}
           class="block h-[360px] w-full border-0 lg:h-[460px]"
