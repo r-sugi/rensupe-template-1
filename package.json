@@ -1,20 +1,19 @@
 {
-  "name": "povit-lp",
+  "name": "rensupe-lp",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run build:css && concurrently -k -n css,worker \"npm:watch:css\" \"wrangler dev\"",
+    "build": "npm run build:css",
     "build:css": "tailwindcss -i ./src/styles.css -o ./public/assets/styles.css --minify",
     "watch:css": "tailwindcss -i ./src/styles.css -o ./public/assets/styles.css --watch",
-    "deploy": "npm run build:css && wrangler deploy",
-    "typecheck": "tsc --noEmit",
-    "cf-typegen": "wrangler types",
-    "db:migrate:local": "wrangler d1 migrations apply povit-lp --local",
-    "db:migrate:remote": "wrangler d1 migrations apply povit-lp --remote",
-    "images:sync:local": "bash ./scripts/sync-images.sh --local",
-    "images:sync:remote": "bash ./scripts/sync-images.sh --remote",
-    "release": "bash ./scripts/release.sh"
+    "dev": "npm run build:css && concurrently -k -n css,worker \"npm:watch:css\" \"wrangler dev\"",
+    "deploy": "npm run build:css && npm run db:migrate:remote && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "release": "bash ./scripts/release.sh",
+    "typecheck": "wrangler types && tsc --noEmit",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "hono": "4.13.13"
@@ -25,5 +24,15 @@
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "wrangler": "4.151.1"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DB": {
+        "description": "LPの文言・料金・FAQ・設備などを保存するデータベース。名前はそのままで大丈夫です"
+      },
+      "IMAGES": {
+        "description": "写真を保存する場所（R2）。**事前にCloudflareダッシュボードでR2を有効化**しておいてください"
+      }
+    }
   }
 }
