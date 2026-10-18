@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "hono/jsx";
 import type { Settings } from "../content";
-import { Brand } from "./ui";
+import { Brand, linkTo } from "./ui";
 
 const NAV = [
   ["#features", "特徴"],
@@ -66,7 +66,7 @@ export const Header = ({ s }: { s: Settings }) => (
           </a>
         ))}
         <a
-          href={s.reservation_url}
+          {...linkTo(s.reservation_url, "予約ページ")}
           class="hidden min-h-[34px] items-center justify-center border border-accent bg-accent px-[15px] font-bold text-[#333] transition duration-200 hover:-translate-y-0.5 hover:shadow-btn md:inline-flex lg:min-h-[54px] lg:px-[30px]"
         >
           予約する
@@ -87,7 +87,7 @@ export const Footer = ({ s }: { s: Settings }) => (
         {FOOTER_NAV.map(([href, label]) => (
           <a href={href}>{label}</a>
         ))}
-        <a href={s.law_url}>特定商取引法に基づく表記</a>
+        <a {...linkTo(s.law_url, "特定商取引法に基づく表記")}>特定商取引法に基づく表記</a>
       </div>
     </div>
   </footer>
@@ -96,7 +96,7 @@ export const Footer = ({ s }: { s: Settings }) => (
 /** スマホのみ表示する画面下の固定CTA */
 export const FloatingCta = ({ s }: { s: Settings }) => (
   <a
-    href={s.reservation_url}
+    {...linkTo(s.reservation_url, "予約ページ")}
     class="fixed right-[14px] bottom-3 left-[14px] z-30 flex min-h-[58px] items-center justify-center rounded-full bg-accent px-6 font-black shadow-floating md:hidden"
   >
     {s.floating_cta_label}

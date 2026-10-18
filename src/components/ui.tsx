@@ -6,6 +6,18 @@ const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ")
 export const lines = (text: string): Child[] =>
   text.split("\n").flatMap((line, i) => (i === 0 ? [line] : [<br />, line]));
 
+/** URL が未設定（空、または [ ] のプレースホルダーのまま）か */
+export const isUnsetUrl = (url: string) => !url.trim() || /[\[\]]/.test(url);
+
+/**
+ * リンクの属性。URL が未設定なら、クリック時に設定を促すアラートを出してページ移動しない
+ * @param name アラートに出す項目名（例：「予約ページ」）
+ */
+export const linkTo = (url: string, name: string): { href: string; onclick?: string } =>
+  isUnsetUrl(url)
+    ? { href: "#", onclick: `alert(${JSON.stringify(`${name}のURLを設定して下さい`)});return false;` }
+    : { href: url };
+
 /** ロゴ（ヘッダー／フッター共通） */
 export const Brand = ({ name, mark, dark = false }: { name: string; mark: string; dark?: boolean }) => (
   <a
@@ -28,15 +40,17 @@ export const Brand = ({ name, mark, dark = false }: { name: string; mark: string
 
 type ButtonProps = PropsWithChildren<{
   href: string;
+  onclick?: string;
   variant?: "ink" | "yellow" | "ghost";
   class?: string;
   external?: boolean;
 }>;
 
 /** 角丸なし・高さ54pxのボタン */
-export const Button = ({ href, variant = "ink", class: extra, external, children }: ButtonProps) => (
+export const Button = ({ href, onclick, variant = "ink", class: extra, external, children }: ButtonProps) => (
   <a
     href={href}
+    onclick={onclick}
     {...(external ? { target: "_blank", rel: "noopener" } : {})}
     class={cx(
       "inline-flex min-h-[54px] items-center justify-center rounded-none border px-[30px] font-bold transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-btn",

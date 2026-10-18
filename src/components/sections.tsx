@@ -1,6 +1,6 @@
 import type { Content, Settings } from "../content";
 import { imageUrl } from "../content";
-import { Button, Lead, lines, Section, SectionName } from "./ui";
+import { Button, Lead, lines, linkTo, Section, SectionName } from "./ui";
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 const yen = (n: number) => `¥${n.toLocaleString("ja-JP")}`;
@@ -96,7 +96,7 @@ export const Pricing = ({ c }: { c: Content }) => (
         <SectionName>ご利用料金</SectionName>
         <Lead>{c.settings.price_lead}</Lead>
       </div>
-      <Button href={c.settings.reservation_url} variant="ghost" class="mt-5 lg:mt-0">
+      <Button {...linkTo(c.settings.reservation_url, "予約ページ")} variant="ghost" class="mt-5 lg:mt-0">
         空き状況を見る
       </Button>
     </div>
@@ -134,7 +134,7 @@ export const Availability = ({ s }: { s: Settings }) => (
     </div>
     <p class="mt-4 mb-0 text-[.82rem] text-sub">{s.availability_note}</p>
     <div class="mt-[22px] flex flex-wrap gap-3">
-      <Button href={s.reservation_url} variant="yellow" class="w-full md:w-auto">
+      <Button {...linkTo(s.reservation_url, "予約ページ")} variant="yellow" class="w-full md:w-auto">
         予約する
       </Button>
     </div>
